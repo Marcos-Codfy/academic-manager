@@ -1,0 +1,36 @@
+# .github/workflows/ci.yml
+name: Flutter CI/CD
+
+# Dispara a esteira em Pull Requests para a branch main
+on:
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  test_and_coverage:
+    runs-on: ubuntu-latest
+    steps:
+      # Pega o código do seu repositório
+      - uses: actions/checkout@v3
+
+      # Instala o Flutter na máquina virtual do GitHub
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+
+      # Baixa as dependências
+      - run: flutter pub get
+
+      # Roda os testes gerando o arquivo de cobertura (lcov.info)
+      - run: flutter test --coverage
+
+      # Script para checar se a cobertura é maior que 75%
+      - name: Check Coverage Percentage
+        run: |
+          # Extrai a porcentagem do arquivo lcov e valida (Simulação simples)
+          COVERAGE=$(lcov --summary coverage/lcov.info | grep "lines" | cut -d ' ' -f 4 | cut -d '%' -f 1)
+          echo "Cobertura atual: $COVERAGE%"
+          if (( $(echo "$COVERAGE < 75.0" | bc -l) )); then
+            echo "A cobertura está abaixo de 75%!"
+            exit 1
+          fi
