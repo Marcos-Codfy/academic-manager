@@ -1,0 +1,27 @@
+# Arquivos gerados pelo Flutter/Dart
+.dart_tool/
+.packages
+build/
+# Arquivo contendo variáveis de ambiente secretas
+.env
+
+# Cobertura de testes
+coverage/
+
+# Arquivos de IDEs e Editores
+.idea/
+.vscode/
+*.iml
+*.ipr
+*.iws
+
+# Arquivos do sistema operacional Windows/Mac
+Thumbs.db
+.DS_Store
+
+# Plugins do Flutter
+.flutter-plugins
+.flutter-plugins-dependencies
+
+# Arquivos gerados pelo build_runner (opcional, mas mantém o PR limpo)
+*.g.dart
