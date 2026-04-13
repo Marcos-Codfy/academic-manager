@@ -16,6 +16,9 @@ import './step/i_tap_the_salvar_button.dart';
 import './step/i_see_software_quality_text.dart';
 import './step/i_tap_the_delete_icon.dart';
 import './step/i_do_not_see_software_quality_text.dart';
+import './step/i_tap_the_edit_icon.dart';
+import './step/i_enter_software_architecture_into_title_input_field.dart';
+import './step/i_see_software_architecture_text.dart';
 
 void main() {
   group('''Discipline Management CRUD''', () {
@@ -36,6 +39,18 @@ void main() {
       await iTapTheSalvarButton(tester);
       await iSeeSoftwareQualityText(tester);
       await iTapTheDeleteIcon(tester);
+      await iDoNotSeeSoftwareQualityText(tester);
+    });
+    testWidgets('''Update an existing discipline''', (tester) async {
+      await theAppIsRunning(tester);
+      await iEnterSoftwareQualityIntoTitleInputField(tester);
+      await iEnter20260801IntoStartDateInputField(tester);
+      await iTapTheSalvarButton(tester);
+      await iSeeSoftwareQualityText(tester);
+      await iTapTheEditIcon(tester);
+      await iEnterSoftwareArchitectureIntoTitleInputField(tester);
+      await iTapTheSalvarButton(tester);
+      await iSeeSoftwareArchitectureText(tester);
       await iDoNotSeeSoftwareQualityText(tester);
     });
   });

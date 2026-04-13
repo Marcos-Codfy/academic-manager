@@ -20,6 +20,16 @@ class DisciplineRepository {
     return _disciplines;
   }
 
+  // Update (Atualizar)
+  // Encontra a disciplina pelo título antigo e a substitui pelos novos dados
+  Future<void> updateDiscipline(String oldTitle, Discipline updatedDiscipline) async {
+    await Future.delayed(const Duration(milliseconds: 300));
+    final index = _disciplines.indexWhere((d) => d.title == oldTitle);
+    if (index != -1) {
+      _disciplines[index] = updatedDiscipline;
+    }
+  }
+
   // Delete (Deletar)
   Future<void> deleteDiscipline(String title) async {
     await Future.delayed(const Duration(milliseconds: 300));

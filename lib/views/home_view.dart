@@ -19,7 +19,12 @@ class _HomeViewState extends State<HomeView> {
 
   bool _isSummer = false;
 
+  // Control variable to know if we are creating or editing
+  // Variável de controle para saber se estamos criando ou editando
+  String? _editingTitle;
+
   void _saveDiscipline() async {
+    // Basic validation
     // Validação básica
     if (_titleController.text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -36,18 +41,41 @@ class _HomeViewState extends State<HomeView> {
       isSummer: _isSummer,
     );
 
-    await widget.viewModel.addDiscipline(discipline);
-
-    if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Disciplina criada com sucesso')),
-      );
-      _titleController.clear();
-      _startDateController.clear();
-      _endDateController.clear();
-      _seatsController.clear();
-      setState(() => _isSummer = false);
+    // Se _editingTitle tiver valor, significa que estamos no modo de edição
+    if (_editingTitle != null) {
+      await widget.viewModel.updateDiscipline(_editingTitle!, discipline);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Disciplina atualizada com sucesso')),
+        );
+      }
+    } else {
+      // Caso contrário, é uma criação nova
+      await widget.viewModel.addDiscipline(discipline);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Disciplina criada com sucesso')),
+        );
+      }
     }
+
+    // Limpa o formulário após salvar/atualizar
+    if (mounted) {
+      _clearForm();
+    }
+  }
+
+  // Preenche os campos do formulário com os dados da disciplina selecionada
+  void _editDiscipline(Discipline discipline) {
+    setState(() {
+      _editingTitle = discipline.title;
+      _titleController.text = discipline.title;
+      // Formatando as datas de volta para 'YYYY-MM-DD' para preencher o input
+      _startDateController.text = discipline.startDate.toIso8601String().split('T').first;
+      _endDateController.text = discipline.endDate.toIso8601String().split('T').first;
+      _seatsController.text = discipline.seats.toString();
+      _isSummer = discipline.isSummer;
+    });
   }
 
   void _deleteDiscipline(String title) async {
@@ -59,11 +87,24 @@ class _HomeViewState extends State<HomeView> {
     }
   }
 
+  // Helper method to clear the form
+  // Método auxiliar para limpar o formulário e sair do modo de edição
+  void _clearForm() {
+    _titleController.clear();
+    _startDateController.clear();
+    _endDateController.clear();
+    _seatsController.clear();
+    setState(() {
+      _isSummer = false;
+      _editingTitle = null; // Sai do modo de edição
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Manager Academic'), // Nome corrigido!
+        title: const Text('Manager Academic'),
       ),
       body: ListenableBuilder(
         listenable: widget.viewModel,
@@ -117,9 +158,10 @@ class _HomeViewState extends State<HomeView> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            'Nova Disciplina',
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+          Text(
+            // O Título da caixa muda dinamicamente se estamos editando
+            _editingTitle != null ? 'Editar Disciplina' : 'Nova Disciplina',
+            style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 24),
           _buildTextField('Title', _titleController),
@@ -140,12 +182,29 @@ class _HomeViewState extends State<HomeView> {
             ],
           ),
           const SizedBox(height: 24),
-          SizedBox(
-            width: double.infinity,
-            child: ElevatedButton(
-              onPressed: _saveDiscipline,
-              child: const Text('Save', style: TextStyle(fontSize: 16)),
-            ),
+          Row(
+            children: [
+              Expanded(
+                child: ElevatedButton(
+                  onPressed: _saveDiscipline,
+                  child: const Text('Save', style: TextStyle(fontSize: 16)),
+                ),
+              ),
+              // Mostra botão de cancelar apenas se estiver editando para limpar e voltar ao modo "Nova Disciplina"
+              if (_editingTitle != null) ...[
+                const SizedBox(width: 16),
+                OutlinedButton(
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: Colors.black,
+                    padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 24),
+                    side: const BorderSide(color: Colors.black),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                  ),
+                  onPressed: _clearForm,
+                  child: const Text('Cancel', style: TextStyle(fontSize: 16)),
+                ),
+              ]
+            ],
           ),
         ],
       ),
@@ -178,10 +237,22 @@ class _HomeViewState extends State<HomeView> {
           contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
           title: Text(discipline.title, style: const TextStyle(fontWeight: FontWeight.bold)),
           subtitle: Text('Vagas: ${discipline.seats} | Verão: ${discipline.isSummer ? "Sim" : "Não"}'),
-          trailing: IconButton(
-            tooltip: 'Delete',
-            icon: const Icon(Icons.delete_outline, color: Colors.red),
-            onPressed: () => _deleteDiscipline(discipline.title),
+          trailing: Row(
+            mainAxisSize: MainAxisSize.min, // Mantém os ícones juntos
+            children: [
+              // Ícone de Editar
+              IconButton(
+                tooltip: 'Edit',
+                icon: const Icon(Icons.edit, color: Colors.blue),
+                onPressed: () => _editDiscipline(discipline),
+              ),
+              // Ícone de Deletar
+              IconButton(
+                tooltip: 'Delete',
+                icon: const Icon(Icons.delete_outline, color: Colors.red),
+                onPressed: () => _deleteDiscipline(discipline.title),
+              ),
+            ],
           ),
         );
       },

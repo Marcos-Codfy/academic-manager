@@ -39,6 +39,16 @@ class DisciplineViewModel extends ChangeNotifier {
     await loadDisciplines(); // Reloads the list (Recarrega a lista)
   }
 
+  // Update an existing discipline
+  // Atualiza uma disciplina existente
+  Future<void> updateDiscipline(String oldTitle, Discipline updatedDiscipline) async {
+    isLoading = true;
+    notifyListeners();
+
+    await repository.updateDiscipline(oldTitle, updatedDiscipline);
+    await loadDisciplines(); // Recarrega a lista com os dados atualizados
+  }
+
   // Remove a discipline by its title
   // Remove uma disciplina pelo seu título
   Future<void> deleteDiscipline(String title) async {
