@@ -1,0 +1,22 @@
+# docker-compose.yml
+version: '3.8'
+
+services:
+  postgres_db:
+    image: postgres:15
+    container_name: academic_db
+    restart: always
+    environment:
+      # Credenciais de acesso ao banco
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin_password
+      POSTGRES_DB: academic_manager
+    ports:
+      # Mapeia a porta padrão do Postgres
+      - "5432:5432"
+    volumes:
+      # Salva os dados no seu HD para não perder ao reiniciar o Docker
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:

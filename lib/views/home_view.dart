@@ -20,8 +20,19 @@ class _HomeViewState extends State<HomeView> {
   bool _isSummer = false;
 
   // Control variable to know if we are creating or editing
-  // Variável de controle para saber se estamos criando ou editando
+  // Variável de controle para saber se estamos a criar ou a editar
   String? _editingTitle;
+
+  @override
+  void initState() {
+    super.initState();
+    // This runs as soon as the screen is loaded
+    // Isto corre assim que o ecrã é carregado.
+    // Usamos o addPostFrameCallback para garantir que a UI está pronta antes de pedir à API.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      widget.viewModel.loadDisciplines();
+    });
+  }
 
   void _saveDiscipline() async {
     // Basic validation
@@ -159,7 +170,7 @@ class _HomeViewState extends State<HomeView> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            // O Título da caixa muda dinamicamente se estamos editando
+            // O Título da caixa muda dinamicamente se estamos a editar
             _editingTitle != null ? 'Editar Disciplina' : 'Nova Disciplina',
             style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
           ),
@@ -190,7 +201,7 @@ class _HomeViewState extends State<HomeView> {
                   child: const Text('Save', style: TextStyle(fontSize: 16)),
                 ),
               ),
-              // Mostra botão de cancelar apenas se estiver editando para limpar e voltar ao modo "Nova Disciplina"
+              // Mostra botão de cancelar apenas se estiver a editar para limpar e voltar ao modo "Nova Disciplina"
               if (_editingTitle != null) ...[
                 const SizedBox(width: 16),
                 OutlinedButton(

@@ -1,16 +1,14 @@
 // lib/main.dart
 import 'package:flutter/material.dart';
 import 'core/app_theme.dart';
-import 'repositories/discipline_repository.dart';
+import 'repositories/api_discipline_repository.dart'; // <--- UPDATED
 import 'viewmodels/discipline_viewmodel.dart';
 import 'views/home_view.dart';
 
-// The main function is the starting point of all Flutter apps
-// A função main é o ponto de partida de todos os apps Flutter
 void main() {
-  // 1. We create the repository (Data layer)
-  // 1. Nós criamos o repositório (Camada de dados)
-  final repository = DisciplineRepository();
+  // 1. We create the API repository (Data layer connected to Backend)
+  // 1. Agora criamos o repositório da API que se conecta ao Backend
+  final repository = ApiDisciplineRepository();
 
   // 2. We inject the repository into the ViewModel (Logic layer)
   // 2. Nós injetamos o repositório no ViewModel (Camada de lógica)
@@ -22,7 +20,6 @@ void main() {
 }
 
 // The main widget that configures the application
-// O widget principal que configura a aplicação
 class AcademicApp extends StatelessWidget {
   final DisciplineViewModel viewModel;
 
@@ -32,14 +29,8 @@ class AcademicApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Academic Web',
-      // We apply the minimalist light theme we created
-      // Nós aplicamos o tema claro minimalista que criamos
       theme: AppTheme.lightTheme,
-      // We hide the debug banner on the top right
-      // Escondemos a faixa de debug no canto superior direito
       debugShowCheckedModeBanner: false,
-      // We set the initial screen (HomeView)
-      // Definimos a tela inicial (HomeView)
       home: HomeView(viewModel: viewModel),
     );
   }
