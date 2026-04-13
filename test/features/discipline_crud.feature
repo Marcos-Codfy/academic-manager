@@ -1,14 +1,25 @@
-Feature: Gerenciamento de Disciplinas (CRUD)
+Feature: Discipline Management CRUD
+  # Funcionalidade: Gerenciamento de Disciplinas CRUD
 
-  Scenario: Criar uma nova disciplina
+  Scenario: Create a new discipline successfully
+    # Cenário: Criar uma nova disciplina com sucesso
     Given the app is running
-    When I enter "Teste de Software" as title
-    And I enter "10" as seats
-    And I toggle summer course to true
+    When I enter "Software Quality" into "Title" input field
+    And I enter "2026-08-01" into "Start Date" input field
+    And I enter "2026-12-15" into "End Date" input field
+    And I enter "30" into "Seats" input field
+    And I toggle "Summer Course" switch
+    And I tap "Save" button
+    Then I see "Discipline created successfully" text
+
+  Scenario: Delete an existing discipline
+    Given the app is running
+    # 1. Primeiro nós criamos a disciplina
+    When I enter "Software Quality" into title input field
+    And I enter "2026-08-01" into Start Date input field
     And I tap the "Salvar" button
-    Then I see "Disciplina criada com sucesso" on the screen
+    Then I see "Software Quality" text
 
-  Scenario: Tentar criar disciplina sem título
-    Given the app is running
-    When I tap the "Salvar" button
-    Then I see "O título é obrigatório" on the screen
+    # 2. Agora nós a deletamos
+    When I tap the delete icon
+    Then I do not see "Software Quality" text

@@ -5,27 +5,38 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import './step/the_app_is_running.dart';
-import './step/i_enter_teste_de_software_as_title.dart';
-import './step/i_enter10_as_seats.dart';
-import './step/i_toggle_summer_course_to_true.dart';
+import './step/i_enter_software_quality_into_title_input_field.dart';
+import './step/i_enter20260801_into_start_date_input_field.dart';
+import './step/i_enter20261215_into_end_date_input_field.dart';
+import './step/i_enter30_into_seats_input_field.dart';
+import './step/i_toggle_summer_course_switch.dart';
+import './step/i_tap_save_button.dart';
+import './step/i_see_discipline_created_successfully_text.dart';
 import './step/i_tap_the_salvar_button.dart';
-import './step/i_see_disciplina_criada_com_sucesso_on_the_screen.dart';
-import './step/i_see_o_titulo_e_obrigatorio_on_the_screen.dart';
+import './step/i_see_software_quality_text.dart';
+import './step/i_tap_the_delete_icon.dart';
+import './step/i_do_not_see_software_quality_text.dart';
 
 void main() {
-  group('''Gerenciamento de Disciplinas (CRUD)''', () {
-    testWidgets('''Criar uma nova disciplina''', (tester) async {
+  group('''Discipline Management CRUD''', () {
+    testWidgets('''Create a new discipline successfully''', (tester) async {
       await theAppIsRunning(tester);
-      await iEnterTesteDeSoftwareAsTitle(tester);
-      await iEnter10AsSeats(tester);
-      await iToggleSummerCourseToTrue(tester);
-      await iTapTheSalvarButton(tester);
-      await iSeeDisciplinaCriadaComSucessoOnTheScreen(tester);
+      await iEnterSoftwareQualityIntoTitleInputField(tester);
+      await iEnter20260801IntoStartDateInputField(tester);
+      await iEnter20261215IntoEndDateInputField(tester);
+      await iEnter30IntoSeatsInputField(tester);
+      await iToggleSummerCourseSwitch(tester);
+      await iTapSaveButton(tester);
+      await iSeeDisciplineCreatedSuccessfullyText(tester);
     });
-    testWidgets('''Tentar criar disciplina sem título''', (tester) async {
+    testWidgets('''Delete an existing discipline''', (tester) async {
       await theAppIsRunning(tester);
+      await iEnterSoftwareQualityIntoTitleInputField(tester);
+      await iEnter20260801IntoStartDateInputField(tester);
       await iTapTheSalvarButton(tester);
-      await iSeeOTituloEObrigatorioOnTheScreen(tester);
+      await iSeeSoftwareQualityText(tester);
+      await iTapTheDeleteIcon(tester);
+      await iDoNotSeeSoftwareQualityText(tester);
     });
   });
 }
