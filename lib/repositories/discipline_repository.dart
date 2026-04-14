@@ -1,27 +1,26 @@
-import '../models/discipline_model.dart';
+// lib/repositories/discipline_repository.dart
 
-// Repository pattern isolates data access
-// O padrão Repository isola o acesso a dados para deixar o app organizado
-class DisciplineRepository {
-  // In-memory list to simulate our database for now
-  // Lista em memória para simular nosso banco de dados por enquanto
+import '../models/discipline_model.dart';
+import 'i_discipline_repository.dart';
+
+// Implementação em memória do repositório.
+// Usada nos testes para não depender de rede ou banco de dados.
+class DisciplineRepository implements IDisciplineRepository {
   final List<Discipline> _disciplines = [];
 
-  // Create (Criar)
+  @override
   Future<void> addDiscipline(Discipline discipline) async {
-    // Simulating network/database delay (Simulando delay de rede/banco)
     await Future.delayed(const Duration(milliseconds: 300));
     _disciplines.add(discipline);
   }
 
-  // Read (Ler)
+  @override
   Future<List<Discipline>> getDisciplines() async {
     await Future.delayed(const Duration(milliseconds: 300));
-    return _disciplines;
+    return List.unmodifiable(_disciplines);
   }
 
-  // Update (Atualizar)
-  // Encontra a disciplina pelo título antigo e a substitui pelos novos dados
+  @override
   Future<void> updateDiscipline(String oldTitle, Discipline updatedDiscipline) async {
     await Future.delayed(const Duration(milliseconds: 300));
     final index = _disciplines.indexWhere((d) => d.title == oldTitle);
@@ -30,7 +29,7 @@ class DisciplineRepository {
     }
   }
 
-  // Delete (Deletar)
+  @override
   Future<void> deleteDiscipline(String title) async {
     await Future.delayed(const Duration(milliseconds: 300));
     _disciplines.removeWhere((d) => d.title == title);

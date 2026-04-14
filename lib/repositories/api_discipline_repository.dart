@@ -1,12 +1,14 @@
+// lib/repositories/api_discipline_repository.dart
+
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import '../models/discipline_model.dart';
-import 'discipline_repository.dart';
+import 'i_discipline_repository.dart';
 
-// This repository connects to our Backend API
-// Este repositório conecta à nossa API Backend e estende o antigo para não quebrar a lógica
-class ApiDisciplineRepository extends DisciplineRepository {
-  // URL da API local
+// Implementação real do repositório que se comunica com o Backend.
+// Implementa IDisciplineRepository diretamente — sem herdar do repositório
+// de memória, seguindo o princípio de Segregação de Interfaces (SOLID).
+class ApiDisciplineRepository implements IDisciplineRepository {
   final String apiUrl = 'http://localhost:8080/disciplines';
 
   @override
@@ -27,6 +29,7 @@ class ApiDisciplineRepository extends DisciplineRepository {
         return data.map((json) => Discipline.fromJson(json)).toList();
       }
     } catch (e) {
+      // ignore: avoid_print
       print('Erro de conexão com a API: $e');
     }
     return [];
