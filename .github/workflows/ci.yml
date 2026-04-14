@@ -9,28 +9,43 @@ on:
 jobs:
   test_and_coverage:
     runs-on: ubuntu-latest
-    steps:
-      # Pega o código do seu repositório
-      - uses: actions/checkout@v3
 
-      # Instala o Flutter na máquina virtual do GitHub
-      - uses: subosito/flutter-action@v2
+    steps:
+      # 1. Faz o checkout do código
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # 2. Instala o Flutter estável
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
         with:
           channel: 'stable'
 
-      # Baixa as dependências
-      - run: flutter pub get
+      # 3. Instala as dependências do projeto Flutter
+      - name: Install dependencies
+        run: flutter pub get
 
-      # Roda os testes gerando o arquivo de cobertura (lcov.info)
-      - run: flutter test --coverage
+      # 4. Roda os testes gerando o relatório de cobertura (coverage/lcov.info)
+      - name: Run tests with coverage
+        run: flutter test --coverage
 
-      # Script para checar se a cobertura é maior que 75%
-      - name: Check Coverage Percentage
+      # 5. Instala o lcov para poder ler o relatório
+      - name: Install lcov
+        run: sudo apt-get install -y lcov
+
+      # 6. Valida se a cobertura é >= 75%
+      - name: Check coverage threshold (75%)
         run: |
-          # Extrai a porcentagem do arquivo lcov e valida (Simulação simples)
-          COVERAGE=$(lcov --summary coverage/lcov.info | grep "lines" | cut -d ' ' -f 4 | cut -d '%' -f 1)
-          echo "Cobertura atual: $COVERAGE%"
-          if (( $(echo "$COVERAGE < 75.0" | bc -l) )); then
-            echo "A cobertura está abaixo de 75%!"
+          SUMMARY=$(lcov --summary coverage/lcov.info 2>&1)
+          echo "$SUMMARY"
+          COVERAGE=$(echo "$SUMMARY" | grep -oP '\d+\.\d+(?=%)' | head -1)
+          echo "Cobertura atual: ${COVERAGE}%"
+          if [ -z "$COVERAGE" ]; then
+            echo "Não foi possível extrair a cobertura. Verifique o arquivo lcov.info."
             exit 1
           fi
+          if (( $(echo "$COVERAGE < 75.0" | bc -l) )); then
+            echo "❌ Cobertura abaixo de 75%! PR bloqueado."
+            exit 1
+          fi
+          echo "✅ Cobertura OK: ${COVERAGE}%"
